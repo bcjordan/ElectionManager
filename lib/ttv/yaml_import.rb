@@ -14,7 +14,8 @@ module TTV
 # Is the .yml being imported of type 'ballot_config"? Ballot_config's have less stringent
 # validation and get connected to the 'default built-in district' etc.
     def ballot_config?
-      @yml_election["type"] == "ballot_config"
+      # TODO: debug for Alton.yml
+      @yml_election["Audit-header"]["type"] == "ballot_config"
     end
 
 # Do the whole import process. Main entry point.
@@ -37,7 +38,7 @@ module TTV
             raise "Invalid YAML election. See console for details."
         end
         @yml_election["precinct_list"].each { |prec| load_precinct prec}            
-        @yml_election["contest_list"].each { |yml_contest| load_contest(yml_contest)}
+        @yml_election["contest_list"].each { |cont| load_contest cont}
       end
       @election
     end
@@ -78,9 +79,10 @@ module TTV
       dist.contests << new_contest
      end
     
-  # load another candiate
+  # load another candidate
   # <tt>cand::</tt>Hash containing a single candidate from yaml
     def load_candidate y_cand, cont
+      # TODO: Check if candidate already loaded?
       new_cand = Candidate.create(:display_name => y_cand["display_name"])
       party_name = y_cand["party_display_name"]
       if ballot_config?
